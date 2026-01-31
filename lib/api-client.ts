@@ -2,8 +2,9 @@
 const API_BASE = '/api';
 
 export async function fetchBrowse(path: string = "") {
-    // Browsing not implemented in Vercel Blob easily for now, return empty
-    return { keys: [] };
+    const res = await fetch(`${API_BASE}/browse?path=${encodeURIComponent(path)}`);
+    if (!res.ok) throw new Error("Failed to browse");
+    return res.json();
 }
 
 export async function fetchEnv(project: string, service: string, env: string, version?: number) {

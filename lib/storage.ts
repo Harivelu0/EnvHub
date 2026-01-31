@@ -3,7 +3,7 @@ import fernet from 'fernet';
 
 // ENVHUB_MASTER_KEY must be a 32-byte base64-encoded string, just like in Python's cryptography.fernet
 // If not provided, we warn and use a dummy key (DEV ONLY)
-const MASTER_KEY = process.env.ENVHUB_MASTER_KEY || 'no-secret-set-no-secret-set-no-secret-set!!=';
+const MASTER_KEY = process.env.ENVHUB_MASTER_KEY || 'Sn-S2vY5W4HuScQ60IG8JXiK9aIMmC-SadbyY1NxWBY=';
 
 if (!process.env.ENVHUB_MASTER_KEY) {
     console.warn("WARNING: ENVHUB_MASTER_KEY not set. Using insecure dummy key.");

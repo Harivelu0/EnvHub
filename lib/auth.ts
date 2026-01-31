@@ -28,12 +28,13 @@ export async function authenticate(req: Request): Promise<string | null> {
     // But we can just call it with authOptions.
     const session = await getServerSession(authOptions);
 
-    if (session?.user?.name) {
-        // If we have a GitHub login stored in name or logic, return it.
-        // Our auth-options logic might put the login in 'name'. 
-        // Usually Github provider puts display name in 'name' and login in 'email' or valid profile.
-        // Let's assume for this hackathon 'name' or 'email' works as identifier.
-        // Ideally we want the handle. 
+    if (session?.user) {
+        // Prefer the username (handle) if available, otherwise fall back to name or email
+        // @ts-ignore
+        if (session.user.username) {
+            // @ts-ignore
+            return session.user.username;
+        }
         return session.user.name || session.user.email || "UnknownUser";
     }
 
