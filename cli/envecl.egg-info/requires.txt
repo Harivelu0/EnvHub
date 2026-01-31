@@ -1,0 +1,5 @@
+azure-identity>=1.15.0
+python-dotenv
+requests
+rich
+typer>=0.9.0
