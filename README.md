@@ -72,6 +72,47 @@ After deploying your app to Vercel, you must update your GitHub OAuth App to rec
 
 ---
 
+## 5. CLI Configuration
+After deploying, configure your local CLI to point to your new instance:
+
+```bash
+# 1. Initialize
+envhub init --api-url https://your-project.vercel.app/api
+
+# 2. Login
+envhub login
+```
+
+---
+
+## 6. CLI Commands Reference
+
+### Push (Upload)
+Upload your local `.env` file to the prod app.
+```bash
+envhub push -p <project> -s <service> -e <env> -r "Reason"
+# Example:
+envhub push -p demo-project -s backend -e prod -r "Added API keys"
+```
+
+### Pull (Download)
+Fetch variables. By default, it prints to console (great for piping). Use `-o` to save to file.
+```bash
+# Save to .env
+envhub pull -p demo-project -s backend -e prod -o .env
+
+# Pipe to Docker or other tools
+envhub pull -p demo-project -s backend -e prod | grep DATABASE_URL
+```
+
+### History (Audit Log)
+See a full audit trail of who changed what.
+```bash
+envhub history -p demo-project -s backend -e prod
+```
+
+---
+
 ## 🛡️ Security Architecture
 
 We take security seriously. Here is how EnvHub protects your infrastructure:
