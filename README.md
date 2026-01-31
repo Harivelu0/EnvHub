@@ -28,7 +28,7 @@ You can deploy your own private instance of EnvHub in minutes.
 Clone this repository and deploy it to Vercel.
 
 ```bash
-git clone https://github.com/your-username/EnvHub.git
+git clone https://github.com/Harivelu0/EnvHub.git
 cd EnvHub
 vercel deploy
 ```
