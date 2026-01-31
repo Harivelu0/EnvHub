@@ -21,10 +21,27 @@ def get_auth_headers(api_url):
     Acquire GitHub Token from `gh` CLI.
     """
     try:
-        # Run `gh auth token` to get the active token
-        result = subprocess.run(["gh", "auth", "token"], capture_output=True, text=True, check=True)
-        token = result.stdout.strip()
+        # Try `gh auth token` (newer versions)
+        result = subprocess.run(["gh", "auth", "token"], capture_output=True, text=True)
         
+        if result.returncode == 0:
+            token = result.stdout.strip()
+        else:
+            # Fallback for older gh versions (like 2.4.0)
+            # Try `gh auth status -t` and parse stderr/stdout
+            # Older versions often print token to stderr with -t
+            res_status = subprocess.run(["gh", "auth", "status", "-t"], capture_output=True, text=True)
+            output = res_status.stdout + res_status.stderr
+            import re
+            match = re.search(r"Token: (gh[a-zA-Z0-9_]+)", output)
+            if match:
+                token = match.group(1)
+            else:
+                # Last ditch: check if 'gh auth token' failed because not logged in
+                console.print("[bold yellow]Could not find GitHub token.[/bold yellow]")
+                console.print(f"Debug: {result.stderr}")
+                raise typer.Exit(code=1)
+
         if not token:
              console.print("[bold red]No GitHub token found.[/bold red]")
              console.print("Run `gh auth login` first.")
@@ -38,8 +55,8 @@ def get_auth_headers(api_url):
         console.print("[bold red]GitHub CLI (`gh`) not installed.[/bold red]")
         console.print("Please install `gh` to use Envecl.")
         raise typer.Exit(code=1)
-    except subprocess.CalledProcessError:
-        console.print("[bold yellow]Not logged in.[/bold yellow] Run `gh auth login`.")
+    except Exception as e:
+        console.print(f"[bold red]Auth Error:[/bold red] {e}")
         raise typer.Exit(code=1) 
 
 def load_config():
@@ -58,7 +75,7 @@ def init(
     api_url: str = typer.Option("http://localhost:3000/api", help="EnvHub API URL"),
 ):
     """
-    Initialize the CLI configuration with Azure AD.
+    Initialize the CLI configuration.
     """
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
     config = {
@@ -67,7 +84,7 @@ def init(
     with open(CONFIG_FILE, "w") as f:
         json.dump(config, f, indent=2)
     console.print(f"[bold green]Config saved to {CONFIG_FILE}[/bold green]")
-    console.print("[dim]Note: You must run 'az login' before using other commands.[/dim]")
+    console.print("[dim]Note: You must run 'gh auth login' before using other commands.[/dim]")
 
 @app.command()
 def push(
@@ -78,7 +95,7 @@ def push(
     reason: str = typer.Option(..., "--reason", "-r", prompt=True, help="Reason for change")
 ):
     """
-    Push a .env file to Azure.
+    Push a .env file to EnvHub.
     """
     config = load_config()
     api_url = config["api_url"]
@@ -130,7 +147,7 @@ def pull(
     output: Optional[Path] = typer.Option(None, "--output", "-o", help="Save to file instead of stdout")
 ):
     """
-    Fetch environment variables from Azure.
+    Fetch environment variables from EnvHub.
     """
     config = load_config()
     api_url = config["api_url"]
@@ -163,10 +180,10 @@ def pull(
                 # Print to stdout without extra newlines for piping
                 print(env_content, end="")
         else:
-            console.print(f"[bold red]Error {response.status_code}:[/bold red] {response.text}", file=sys.stderr)
+            console.print(f"[bold red]Error {response.status_code}:[/bold red] {response.text}")
 
     except Exception as e:
-        console.print(f"[bold red]Failed:[/bold red] {e}", file=sys.stderr)
+        console.print(f"[bold red]Failed:[/bold red] {e}")
 
 @app.command()
 def history(

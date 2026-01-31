@@ -8,52 +8,60 @@ from rich.console import Console
 from rich.table import Table
 from pathlib import Path
 
-app = typer.Typer(help="ENVECL - Azure Environment Manager")
+app = typer.Typer(help="EnvHub CLI - Secure Environment Management")
 console = Console()
 
-CONFIG_DIR = Path.home() / ".envecl"
+CONFIG_DIR = Path.home() / ".envhub"
 CONFIG_FILE = CONFIG_DIR / "config.json"
 
-# -----------------------------------------------------------------------------
-# INTERNAL CONFIGURATION
-# -----------------------------------------------------------------------------
-DEFAULT_API_URL = "https://envecl.azurewebsites.net/api"
-
-from azure.identity import DefaultAzureCredential
-from azure.core.exceptions import ClientAuthenticationError
+import subprocess
 
 def get_auth_headers(api_url):
     """
-    Acquire Azure AD Token and return headers.
+    Acquire GitHub Token from `gh` CLI.
     """
-    # If running against localhost, use anonymous/mock headers for backward compatibility if needed
-    if "localhost" in api_url or "127.0.0.1" in api_url:
-        # Mock mode or local debug
-        return {"x-user-id": "local-dev@aity.dev", "Content-Type": "application/json"}
-
-    console.print("[dim]Acquiring Azure Access Token...[/dim]")
     try:
-        config = load_config()
-        scope = config.get("scope")
-        if not scope:
-            # Fallback for management scope if not configured, though likely to fail if Audience check is enforcing app ID
-            scope = "https://management.azure.com/.default" 
+        # Try `gh auth token` (newer versions)
+        result = subprocess.run(["gh", "auth", "token"], capture_output=True, text=True)
         
-        credential = DefaultAzureCredential()
-        token = credential.get_token(scope)
-        
+        if result.returncode == 0:
+            token = result.stdout.strip()
+        else:
+            # Fallback for older gh versions (like 2.4.0)
+            # Try `gh auth status -t` and parse stderr/stdout
+            # Older versions often print token to stderr with -t
+            res_status = subprocess.run(["gh", "auth", "status", "-t"], capture_output=True, text=True)
+            output = res_status.stdout + res_status.stderr
+            import re
+            match = re.search(r"Token: (gh[a-zA-Z0-9_]+)", output)
+            if match:
+                token = match.group(1)
+            else:
+                # Last ditch: check if 'gh auth token' failed because not logged in
+                console.print("[bold yellow]Could not find GitHub token.[/bold yellow]")
+                console.print(f"Debug: {result.stderr}")
+                raise typer.Exit(code=1)
+
+        if not token:
+             console.print("[bold red]No GitHub token found.[/bold red]")
+             console.print("Run `gh auth login` first.")
+             raise typer.Exit(code=1)
+
         return {
-            "Authorization": f"Bearer {token.token}",
+            "Authorization": f"Bearer {token}",
             "Content-Type": "application/json"
         }
+    except FileNotFoundError:
+        console.print("[bold red]GitHub CLI (`gh`) not installed.[/bold red]")
+        console.print("Please install `gh` to use Envecl.")
+        raise typer.Exit(code=1)
     except Exception as e:
-        console.print(f"[bold red]Authentication Failed:[/bold red] {e}")
-        console.print("Run `az login` to authenticate.")
+        console.print(f"[bold red]Auth Error:[/bold red] {e}")
         raise typer.Exit(code=1) 
 
 def load_config():
     if not CONFIG_FILE.exists():
-        console.print("[bold yellow]Not configured.[/bold yellow] Run `envecl init` first.")
+        console.print("[bold yellow]Not configured.[/bold yellow] Run `envhub init` first.")
         raise typer.Exit(code=1)
     try:
         with open(CONFIG_FILE, "r") as f:
@@ -64,21 +72,19 @@ def load_config():
 
 @app.command()
 def init(
-    scope: str = typer.Option(..., prompt=True, help="App ID URI (e.g. api://<client-id>/.default)"),
-    api_url: str = typer.Option(DEFAULT_API_URL, help="Azure Function URL"),
+    api_url: str = typer.Option("http://localhost:3000/api", help="EnvHub API URL"),
 ):
     """
-    Initialize the CLI configuration with Azure AD.
+    Initialize the CLI configuration.
     """
     CONFIG_DIR.mkdir(parents=True, exist_ok=True)
     config = {
         "api_url": api_url.rstrip("/"),
-        "scope": scope
     }
     with open(CONFIG_FILE, "w") as f:
         json.dump(config, f, indent=2)
     console.print(f"[bold green]Config saved to {CONFIG_FILE}[/bold green]")
-    console.print("[dim]Note: You must run 'az login' before using other commands.[/dim]")
+    console.print("[dim]Note: You must run 'gh auth login' before using other commands.[/dim]")
 
 @app.command()
 def push(
@@ -89,7 +95,7 @@ def push(
     reason: str = typer.Option(..., "--reason", "-r", prompt=True, help="Reason for change")
 ):
     """
-    Push a .env file to Azure.
+    Push a .env file to EnvHub.
     """
     config = load_config()
     api_url = config["api_url"]
@@ -141,7 +147,7 @@ def pull(
     output: Optional[Path] = typer.Option(None, "--output", "-o", help="Save to file instead of stdout")
 ):
     """
-    Fetch environment variables from Azure.
+    Fetch environment variables from EnvHub.
     """
     config = load_config()
     api_url = config["api_url"]
@@ -174,10 +180,10 @@ def pull(
                 # Print to stdout without extra newlines for piping
                 print(env_content, end="")
         else:
-            console.print(f"[bold red]Error {response.status_code}:[/bold red] {response.text}", file=sys.stderr)
+            console.print(f"[bold red]Error {response.status_code}:[/bold red] {response.text}")
 
     except Exception as e:
-        console.print(f"[bold red]Failed:[/bold red] {e}", file=sys.stderr)
+        console.print(f"[bold red]Failed:[/bold red] {e}")
 
 @app.command()
 def history(

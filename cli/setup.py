@@ -8,8 +8,7 @@ setup(
         "typer>=0.9.0",
         "requests",
         "python-dotenv",
-        "rich",
-        "azure-identity>=1.15.0"
+        "rich"
     ],
     entry_points={
         "console_scripts": [

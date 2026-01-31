@@ -33,51 +33,53 @@ cd EnvHub
 vercel deploy
 ```
 
-### 3. Configure Environment Variables
-Set the following Environment Variables in your Vercel Project Settings:
+### 3. Configure Environment Variables (Critical for Security)
+To ensure your instance is **100% Secure** and private to your organization, you must set these variables in Vercel:
 
+#### 🔐 Authentication & Access
 | Variable | Description |
 |----------|-------------|
-| `BLOB_READ_WRITE_TOKEN` | **Required**. Create a Vercel Blob store and copy the generic Read/Write token. This is where your secrets live. |
-| `ENVHUB_MASTER_KEY` | **Required**. 32-byte Fernet Key for encryption. Run `python3 -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"` to generate one. |
-| `GITHUB_ID` | **Required**. GitHub OAuth App Client ID. |
-| `GITHUB_SECRET` | **Required**. GitHub OAuth App Secret. |
-| `NEXTAUTH_SECRET` | **Required**. Any random string (e.g. `openssl rand -base64 32`). |
-| `NEXTAUTH_URL` | Set to your Vercel URL (e.g. `https://envhub.your-org.com`). |
-| `ALLOWED_ORGS` | **Recommended**. Comma-separated list of GitHub Organizations allowed to login (e.g. `MyCompany,OpenAI`). |
-| `ALLOWED_USERS` | (Optional) Comma-separated list of specific GitHub emails/users allowed. |
-| `NEXT_PUBLIC_ENABLE_DEMO_MODE` | Set to `false` (default) for production. Set to `true` only if you want a public sandbox. |
+| `GITHUB_ID` | **Required**. Create a [New OAuth App](https://github.com/settings/developers) on GitHub. This allows users to "Login with GitHub". |
+| `GITHUB_SECRET` | **Required**. The secret key from your GitHub OAuth App. |
+| `ALLOWED_ORGS` | **CRITICAL**. Comma-separated list of GitHub Organizations (e.g., `MyCompany,OpenAI`). <br>✅ **Security Guarantee**: Only users who are public members of these organizations can log in. Everyone else is rejected. |
+| `ALLOWED_USERS` | (Optional) Restrict access to specific GitHub handles (e.g., `octocat`). |
+
+#### 🗄️ Data Ownership
+| Variable | Description |
+|----------|-------------|
+| `BLOB_READ_WRITE_TOKEN` | **Required**. This token connects to **YOUR** Vercel Blob store. <br>✅ **Privacy Guarantee**: All secrets are stored in your own bucket. We do not have access to it. |
+| `ENVHUB_MASTER_KEY` | **Required**. 32-byte Fernet Key. <br>✅ **Encryption**: All variables are encrypted *before* they are saved. Even the database admin cannot read them without this key. |
+
+#### ⚙️ Standard Config
+| Variable | Value |
+|----------|-------|
+| `NEXTAUTH_SECRET` | A random string (run `openssl rand -base64 32`). |
+| `NEXTAUTH_URL` | Your Vercel deployment URL (e.g., `https://envhub-mycompany.vercel.app`). |
+| `NEXT_PUBLIC_ENABLE_DEMO_MODE` | Set to `false` (default). **Only set to `true` for public demos (Sandboxed).** |
 
 ---
 
-## 🛠️ CLI Installation
+## 4. Finalizing Production (GitHub App)
+Since you developed locally on `localhost:3000`, you must update your GitHub App to point to your new Production URL.
 
-Once your instance is deployed, you don't need to distribute binaries manually.
-
-1.  Log in to your **EnvHub Dashboard**.
-2.  Click the **"Install CLI"** widget in the sidebar.
-3.  Copy and run the `pip install` command:
-
-```bash
-pip install https://envhub.your-org.com/cli/envhub_cli-2.0.2-py3-none-any.whl
-```
-
-### authenticate
-```bash
-# Point the CLI to your private instance
-export ENVHUB_URL=https://envhub.your-org.com
-
-# Log in
-envhub login
-```
+1.  Go to [GitHub Developer Settings](https://github.com/settings/developers).
+2.  Click on your **OAuth App**.
+3.  **Update Homepage URL**:
+    *   Change `http://localhost:3000` to `https://your-project.vercel.app`
+4.  **Update Authorization Callback URL**:
+    *   Change `http://localhost:3000/api/auth/callback/github` to `https://your-project.vercel.app/api/auth/callback/github`
+5.  Click **Update Application**.
 
 ---
 
-## 🛡️ Security Model
+## 🛡️ Security Architecture
 
-- **Authentication**: Usage is gated by GitHub OAuth. You control who gets in via `ALLOWED_ORGS`.
-- **Isolation**: Each deployment uses its own Vercel Blob Store. Your data is physically separated from others.
-- **Audit**: Every action (Push/Pull) is logged with the user's GitHub Handle.
+We take security seriously. Here is how EnvHub protects your infrastructure:
+
+1.  **Zero-Knowledge Architecture**: You own the infrastructure. You deploy it to *your* Vercel account, using *your* database. We (the creators) have zero access to your data.
+2.  **Encryption at Rest**: We use **Fernet (AES-128)** symmetric encryption. Secrets are encrypted before writing to storage.
+3.  **Strict Isolation**: By setting `ALLOWED_ORGS`, you enforce a hardware-level gate. If a user is not in your GitHub Org, they cannot even see the dashboard.
+4.  **Audit Logs**: Every change is versioned and attributed to a GitHub User Handle. You always know who changed `DATABASE_URL` and when.
 
 ## License
 MIT
