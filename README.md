@@ -41,7 +41,7 @@ To ensure your instance is **100% Secure** and private to your organization, you
 |----------|-------------|
 | `GITHUB_ID` | **Required**. Create a [New OAuth App](https://github.com/settings/developers) on GitHub. This allows users to "Login with GitHub". |
 | `GITHUB_SECRET` | **Required**. The secret key from your GitHub OAuth App. |
-| `ALLOWED_ORGS` | **CRITICAL**. Comma-separated list of GitHub Organizations (e.g., `MyCompany,OpenAI`). <br>✅ **Security Guarantee**: Only users who are public members of these organizations can log in. Everyone else is rejected. |
+| `ALLOWED_ORGS` | **CRITICAL**. Comma-separated list of GitHub Organizations (e.g., `MyCompany,OpenAI`). <br>✅ **Security Guarantee**: Only users who are public members of these organizations can log in. Everyone else is rejected. <br>⚠️ **IMPORTANT**: Users must explicitly **Grant Access** to the Organization in their GitHub Settings -> Applications -> Authorized OAuth Apps. If they don't, GitHub hides their membership, and they will get "Access Denied". |
 | `ALLOWED_USERS` | (Optional) Restrict access to specific GitHub handles (e.g., `octocat`). |
 
 #### 🗄️ Data Ownership
