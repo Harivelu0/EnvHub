@@ -47,8 +47,8 @@ To ensure your instance is **100% Secure** and private to your organization, you
 #### 🗄️ Data Ownership
 | Variable | Description |
 |----------|-------------|
-| `BLOB_READ_WRITE_TOKEN` | **Required**. This token connects to **YOUR** Vercel Blob store. <br>✅ **Privacy Guarantee**: All secrets are stored in your own bucket. We do not have access to it. |
-| `ENVHUB_MASTER_KEY` | **Required**. 32-byte Fernet Key. <br>✅ **Encryption**: All variables are encrypted *before* they are saved. Even the database admin cannot read them without this key. |
+| `BLOB_READ_WRITE_TOKEN` | **Required**. Go to [Vercel Storage](https://vercel.com/dashboard/storage) -> Create Database -> Blob. <br>Copy the **Read/Write Token**. This is where your secrets live. |
+| `ENVHUB_MASTER_KEY` | **Required**. Run the python command found in [.env.example](/.env.example) to generate this. <br>✅ **Encryption**: All variables are encrypted *before* they are saved. |
 
 #### ⚙️ Standard Config
 | Variable | Value |
@@ -60,14 +60,14 @@ To ensure your instance is **100% Secure** and private to your organization, you
 ---
 
 ## 4. Finalizing Production (GitHub App)
-Since you developed locally on `localhost:3000`, you must update your GitHub App to point to your new Production URL.
+After deploying your app to Vercel, you must update your GitHub OAuth App to recognize the new production domain.
 
 1.  Go to [GitHub Developer Settings](https://github.com/settings/developers).
-2.  Click on your **OAuth App**.
+2.  Select the **OAuth App** you created in Step 3.
 3.  **Update Homepage URL**:
-    *   Change `http://localhost:3000` to `https://your-project.vercel.app`
+    *   Set to your Vercel URL (e.g., `https://your-project.vercel.app`).
 4.  **Update Authorization Callback URL**:
-    *   Change `http://localhost:3000/api/auth/callback/github` to `https://your-project.vercel.app/api/auth/callback/github`
+    *   Set to `https://your-project.vercel.app/api/auth/callback/github`.
 5.  Click **Update Application**.
 
 ---
