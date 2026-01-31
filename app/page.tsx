@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { ChevronRight, ChevronDown, Folder, Server, RefreshCw, Lock, LogOut, Plus, Download, Terminal } from "lucide-react";
+import { ChevronRight, ChevronDown, Folder, Server, RefreshCw, Lock, LogOut, Plus, Download, Terminal, Copy } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 import Explorer from "./components/Explorer";
@@ -149,7 +149,7 @@ export default function Home() {
                     pip install envhub-cli...
                   </code>
                   <div className="text-gray-500 group-hover:text-white">
-                    <Download size={12} />
+                    <Copy size={12} />
                   </div>
                 </div>
                 <p className="text-[10px] text-gray-600 mt-1 text-center">Click to copy command</p>
