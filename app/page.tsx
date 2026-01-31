@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { Plus, Lock, LogOut, Github } from "lucide-react";
+import { ChevronRight, ChevronDown, Folder, Server, RefreshCw, Lock, LogOut, Plus, Download, Terminal } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 
 import Explorer from "./components/Explorer";
@@ -126,17 +126,47 @@ export default function Home() {
           </div>
 
           <div className="flex-1 overflow-y-auto pt-4 px-2">
-            <Explorer onSelectEnv={handleSelectEnv} />
+            <Explorer onSelectEnv={handleSelectEnv} selected={selected} />
           </div>
 
-          <div className="p-4 border-t border-white/10 bg-black/10">
-            <div className="flex items-center space-x-3 mb-3 px-2">
+          <div className="p-4 border-t border-white/10 bg-black/10 space-y-3">
+            {/* CLI Installation Instructions */}
+            <div className="px-3 py-2">
+              <div className="bg-black/30 rounded-lg p-3 border border-white/10">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Install CLI</span>
+                  <Terminal size={12} className="text-blue-400" />
+                </div>
+                <div className="bg-black/50 rounded p-2 flex items-center justify-between group cursor-pointer hover:bg-black/70 transition-colors"
+                  onClick={() => {
+                    const url = `${window.location.protocol}//${window.location.host}/cli/envhub_cli-2.0.2-py3-none-any.whl`;
+                    const cmd = `pip install ${url}`;
+                    navigator.clipboard.writeText(cmd);
+                    alert("Command copied to clipboard!");
+                  }}
+                >
+                  <code className="text-[10px] text-green-400 font-mono truncate mr-2">
+                    pip install envhub-cli...
+                  </code>
+                  <div className="text-gray-500 group-hover:text-white">
+                    <Download size={12} />
+                  </div>
+                </div>
+                <p className="text-[10px] text-gray-600 mt-1 text-center">Click to copy command</p>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-3 px-2">
               <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-400 to-purple-500 flex items-center justify-center font-bold text-xs">
                 {session?.user?.name?.[0] || "U"}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{session?.user?.name}</p>
-                <p className="text-xs text-gray-400 truncate">{session?.user?.email}</p>
+                <p className="text-sm font-medium truncate font-mono text-blue-400">
+                  {session?.user?.username ? `@${session.user.username}` : (session?.user?.name || "User")}
+                </p>
+                {session?.user?.username && session?.user?.name && (
+                  <p className="text-xs text-gray-400 truncate">{session.user.name}</p>
+                )}
               </div>
             </div>
             <button
@@ -155,17 +185,17 @@ export default function Home() {
           <header className="sticky top-0 z-20 backdrop-blur-md bg-black/5 border-b border-white/5 px-8 py-4 flex items-center justify-between">
             <div className="text-sm text-gray-400">
               {selected ? (
-                <span className="flex items-center space-x-2">
-                  <span className="text-gray-500">Environment</span>
+                <span className="flex items-center space-x-2 text-lg">
+                  <span className="text-gray-500 font-medium">{selected.p}</span>
                   <span className="text-gray-600">/</span>
-                  <h2 className="text-4xl font-extrabold text-gray-800 tracking-tight">
-                    Welcome to <span className="text-blue-600">EnvHub</span>
-                  </h2>  <span className="text-white font-medium">{selected.s}</span>
+                  <span className="text-gray-300 font-medium">{selected.s}</span>
                   <span className="text-gray-600">/</span>
-                  <span className="text-blue-400 font-medium">{selected.e}</span>
+                  <span className="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-400 font-semibold border border-blue-500/20 shadow-[0_0_10px_rgba(59,130,246,0.2)]">
+                    {selected.e}
+                  </span>
                 </span>
               ) : (
-                <span>Dashboard</span>
+                <span className="text-lg font-medium text-gray-500">Dashboard</span>
               )}
             </div>
 

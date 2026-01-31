@@ -18,6 +18,12 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
         }
 
+        // SECURITY: Demo User Isolation
+        const isDemoUser = user.toLowerCase().includes("demo"); // Matches 'DemoUser' or 'demo@aity.dev'
+        if (isDemoUser && project !== "demo-project") {
+            return NextResponse.json({ error: 'Demo users can only edit "demo-project".' }, { status: 403 });
+        }
+
         const manager = new BlobManager();
         const version = await manager.pushBundle(
             project,

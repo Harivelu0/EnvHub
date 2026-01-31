@@ -48,13 +48,15 @@ function LoginContent() {
                             <span>Continue with GitHub</span>
                         </button>
 
-                        <button
-                            onClick={() => signIn("credentials", { callbackUrl: "/" })}
-                            className="w-full flex items-center justify-center space-x-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium py-3.5 px-4 rounded-xl transition-all hover:border-white/20"
-                        >
-                            <Terminal className="w-5 h-5 text-gray-400" />
-                            <span>Demo Access (No Account)</span>
-                        </button>
+                        {process.env.NEXT_PUBLIC_ENABLE_DEMO_MODE === "true" && (
+                            <button
+                                onClick={() => signIn("credentials", { callbackUrl: "/" })}
+                                className="w-full flex items-center justify-center space-x-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium py-3.5 px-4 rounded-xl transition-all hover:border-white/20"
+                            >
+                                <Terminal className="w-5 h-5 text-gray-400" />
+                                <span>Demo Access (No Account)</span>
+                            </button>
+                        )}
                     </div>
 
                     <div className="pt-6 text-xs text-gray-500 border-t border-white/5 w-full">

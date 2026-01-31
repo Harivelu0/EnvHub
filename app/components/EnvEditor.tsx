@@ -134,171 +134,182 @@ export default function EnvEditor({ initialData, onSave, onCancel }: EnvEditorPr
     };
 
     return (
-        <form onSubmit={handleSubmit} className="p-6 bg-white shadow-sm rounded-lg border">
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold">
-                    {isEditing ? "Edit Environment" : "Create New Environment"}
-                </h2>
-                <button
-                    type="button"
-                    onClick={onCancel}
-                    className="text-gray-500 hover:text-gray-700"
-                >
-                    <X size={24} />
-                </button>
-            </div>
 
-            {/* Metadata Fields */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Project</label>
-                    <input
-                        type="text"
-                        className="w-full px-3 py-2 border rounded-md bg-gray-50"
-                        value={project}
-                        onChange={e => setProject(e.target.value)}
-                        disabled={isEditing}
-                        placeholder="my-app"
-                        required
-                    />
+        <div className="bg-gray-900/60 backdrop-blur-xl border border-white/10 shadow-2xl rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            <form onSubmit={handleSubmit} className="p-8">
+                <div className="flex justify-between items-center mb-8">
+                    <div>
+                        <h2 className="text-2xl font-bold text-white tracking-tight">
+                            {isEditing ? "Edit Environment" : "Create New Environment"}
+                        </h2>
+                        <p className="text-sm text-gray-400 mt-1">
+                            {isEditing ? "Modify existing variables and save a new version." : "Add a new environment configuration."}
+                        </p>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={onCancel}
+                        className="text-gray-400 hover:text-white transition-colors bg-white/5 p-2 rounded-full hover:bg-white/10"
+                    >
+                        <X size={20} />
+                    </button>
                 </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Service</label>
-                    <input
-                        type="text"
-                        className="w-full px-3 py-2 border rounded-md bg-gray-50"
-                        value={service}
-                        onChange={e => setService(e.target.value)}
-                        disabled={isEditing}
-                        placeholder="backend"
-                        required
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Environment</label>
-                    <input
-                        type="text"
-                        className="w-full px-3 py-2 border rounded-md bg-gray-50"
-                        value={environment}
-                        onChange={e => setEnvironment(e.target.value)}
-                        disabled={isEditing}
-                        placeholder="dev" // Could select from dropdown too
-                        required
-                    />
-                </div>
-            </div>
 
-            {/* Variables Editor */}
-            <div className="mb-6">
-                <div className="flex justify-between items-center mb-2">
-                    <label className="block text-sm font-medium text-gray-700">Variables</label>
-                    <div className="flex bg-gray-100 rounded-lg p-1">
-                        <button
-                            type="button"
-                            onClick={switchToList}
-                            className={`px-3 py-1 text-xs font-medium rounded-md ${mode === "list" ? "bg-white shadow text-blue-600" : "text-gray-600 hover:text-gray-800"}`}
-                        >
-                            List View
-                        </button>
-                        <button
-                            type="button"
-                            onClick={switchToBulk}
-                            className={`px-3 py-1 text-xs font-medium rounded-md ${mode === "bulk" ? "bg-white shadow text-blue-600" : "text-gray-600 hover:text-gray-800"}`}
-                        >
-                            Bulk Editor
-                        </button>
+                {/* Metadata Fields */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div className="space-y-2">
+                        <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Project</label>
+                        <input
+                            type="text"
+                            className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500/50 transition-all"
+                            value={project}
+                            onChange={e => setProject(e.target.value)}
+                            disabled={isEditing}
+                            placeholder="my-app"
+                            required
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Service</label>
+                        <input
+                            type="text"
+                            className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+                            value={service}
+                            onChange={e => setService(e.target.value)}
+                            disabled={isEditing}
+                            placeholder="backend"
+                            required
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Environment</label>
+                        <input
+                            type="text"
+                            className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-green-500/50 transition-all"
+                            value={environment}
+                            onChange={e => setEnvironment(e.target.value)}
+                            disabled={isEditing}
+                            placeholder="dev"
+                            required
+                        />
                     </div>
                 </div>
 
-                {mode === "list" ? (
-                    <div className="space-y-2">
-                        <div className="flex justify-end mb-2">
+                {/* Variables Editor */}
+                <div className="mb-8">
+                    <div className="flex justify-between items-center mb-4">
+                        <label className="text-sm font-semibold text-gray-300">Environment Variables</label>
+                        <div className="flex bg-black/40 rounded-lg p-1 border border-white/5">
+                            <button
+                                type="button"
+                                onClick={switchToList}
+                                className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${mode === "list" ? "bg-white/10 text-white shadow-sm" : "text-gray-500 hover:text-gray-300"}`}
+                            >
+                                List View
+                            </button>
+                            <button
+                                type="button"
+                                onClick={switchToBulk}
+                                className={`px-4 py-1.5 text-xs font-medium rounded-md transition-all ${mode === "bulk" ? "bg-white/10 text-white shadow-sm" : "text-gray-500 hover:text-gray-300"}`}
+                            >
+                                Bulk Editor
+                            </button>
+                        </div>
+                    </div>
+
+                    {mode === "list" ? (
+                        <div className="space-y-3">
+                            <div className="space-y-3 p-4 bg-black/20 rounded-xl border border-white/5 max-h-[400px] overflow-y-auto custom-scrollbar">
+                                {vars.map((item, index) => (
+                                    <div key={index} className="flex gap-3 items-center group animate-in fade-in slide-in-from-left-2 duration-300" style={{ animationDelay: `${index * 50}ms` }}>
+                                        <div className="flex-1 relative">
+                                            <input
+                                                type="text"
+                                                placeholder="KEY"
+                                                className="w-full px-4 py-2.5 bg-black/40 border border-white/5 rounded-lg font-mono text-sm text-blue-300 placeholder-white/10 focus:outline-none focus:ring-1 focus:ring-blue-500/50 uppercase"
+                                                value={item.k}
+                                                onChange={(e) => updateVar(index, "k", e.target.value)}
+                                            />
+                                        </div>
+                                        <span className="text-gray-600 font-mono">=</span>
+                                        <div className="flex-1 relative">
+                                            <input
+                                                type="text"
+                                                placeholder="VALUE"
+                                                className="w-full px-4 py-2.5 bg-black/40 border border-white/5 rounded-lg font-mono text-sm text-gray-300 placeholder-white/10 focus:outline-none focus:ring-1 focus:ring-purple-500/50"
+                                                value={item.v}
+                                                onChange={(e) => updateVar(index, "v", e.target.value)}
+                                            />
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => removeVar(index)}
+                                            className="text-gray-600 hover:text-red-400 p-2 opacity-0 group-hover:opacity-100 transition-all rounded-lg hover:bg-red-500/10"
+                                            title="Remove"
+                                        >
+                                            <Trash2 size={18} />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
                             <button
                                 type="button"
                                 onClick={addVar}
-                                className="text-sm text-blue-600 hover:text-blue-700 flex items-center"
+                                className="w-full py-3 border border-dashed border-white/10 rounded-xl text-gray-400 hover:text-white hover:border-white/20 hover:bg-white/5 transition-all flex items-center justify-center text-sm font-medium"
                             >
-                                <Plus size={16} className="mr-1" /> Add Variable
+                                <Plus size={16} className="mr-2" /> Add Variable
                             </button>
                         </div>
-                        <div className="space-y-2 border rounded-md p-4 bg-gray-50 max-h-96 overflow-y-auto">
-                            {vars.map((item, index) => (
-                                <div key={index} className="flex gap-2 items-center">
-                                    <input
-                                        type="text"
-                                        placeholder="KEY"
-                                        className="flex-1 px-3 py-2 border rounded-md font-mono text-sm uppercase"
-                                        value={item.k}
-                                        onChange={(e) => updateVar(index, "k", e.target.value)}
-                                    />
-                                    <span className="text-gray-400">=</span>
-                                    <input
-                                        type="text"
-                                        placeholder="VALUE"
-                                        className="flex-1 px-3 py-2 border rounded-md font-mono text-sm"
-                                        value={item.v}
-                                        onChange={(e) => updateVar(index, "v", e.target.value)}
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => removeVar(index)}
-                                        className="text-red-500 hover:text-red-700 p-2"
-                                        title="Remove"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
-                                </div>
-                            ))}
+                    ) : (
+                        <div className="relative">
+                            <textarea
+                                className="w-full h-96 p-6 font-mono text-sm bg-black/40 border border-white/10 rounded-xl text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition leading-relaxed resize-none"
+                                value={bulkText}
+                                onChange={(e) => setBulkText(e.target.value)}
+                                placeholder="PASTE .ENV CONTENT HERE&#10;KEY=VALUE&#10;ANOTHER=123"
+                                spellCheck={false}
+                            ></textarea>
+                            <div className="absolute bottom-4 right-4 text-xs text-gray-500 bg-black/60 px-2 py-1 rounded backdrop-blur-sm">
+                                .env format supported
+                            </div>
                         </div>
-                    </div>
-                ) : (
-                    <div className="border rounded-md p-0 overflow-hidden">
+                    )}
+                </div>
+
+                {/* Change Reason - Only for updates */}
+                {isEditing && (
+                    <div className="mb-8 animate-in fade-in slide-in-from-bottom-4">
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Change Reason <span className="text-red-400">*</span></label>
                         <textarea
-                            className="w-full h-96 p-4 font-mono text-sm bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition"
-                            value={bulkText}
-                            onChange={(e) => setBulkText(e.target.value)}
-                            placeholder="PASTE .ENV CONTENT HERE&#10;KEY=VALUE&#10;ANOTHER=123"
+                            className="w-full px-4 py-3 bg-black/20 border border-white/10 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none"
+                            rows={2}
+                            value={changeReason}
+                            onChange={e => setChangeReason(e.target.value)}
+                            placeholder="e.g. Added feature flags for V2"
+                            minLength={5}
+                            required
                         ></textarea>
-                        <div className="bg-gray-100 px-4 py-2 text-xs text-gray-500 border-t">
-                            Paste your .env file content here. Lines starting with # are ignored.
-                        </div>
                     </div>
                 )}
-            </div>
 
-            {/* Change Reason - Only for updates */}
-            {isEditing && (
-                <div className="mb-6">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Change Reason (Required)</label>
-                    <textarea
-                        className="w-full px-3 py-2 border rounded-md"
-                        rows={2}
-                        value={changeReason}
-                        onChange={e => setChangeReason(e.target.value)}
-                        placeholder="e.g. Added feature flags for V2"
-                        minLength={5}
-                        required
-                    ></textarea>
+                {/* Actions */}
+                <div className="flex justify-end gap-4 pt-4 border-t border-white/5">
+                    <button
+                        type="button"
+                        onClick={onCancel}
+                        className="px-6 py-2.5 text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all font-medium"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="submit"
+                        className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white rounded-xl font-medium shadow-lg shadow-blue-900/20 hover:shadow-blue-900/40 transition-all transform hover:scale-[1.02] active:scale-[0.98] flex items-center"
+                    >
+                        <Save size={18} className="mr-2" />
+                        Save Changes
+                    </button>
                 </div>
-            )}
-
-            {/* Actions */}
-            <div className="flex justify-end gap-3">
-                <button
-                    type="button"
-                    onClick={onCancel}
-                    className="px-4 py-2 text-gray-700 bg-white border rounded-md hover:bg-gray-50"
-                >
-                    Cancel
-                </button>
-                <button
-                    type="submit"
-                    className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 flex items-center"
-                >
-                    <Save size={16} className="mr-2" />
-                    Save Changes
-                </button>
-            </div>
-        </form>
+            </form>
+        </div>
     );
 }
