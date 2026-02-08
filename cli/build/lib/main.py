@@ -71,6 +71,31 @@ def load_config():
         raise typer.Exit(code=1)
 
 @app.command()
+def login():
+    """
+    Authenticate with GitHub (via `gh` CLI).
+    """
+    console.print("[dim]Checking GitHub CLI...[/dim]")
+    try:
+        # Check if gh is installed / verify status
+        subprocess.run(["gh", "--version"], stdout=subprocess.DEVNULL, check=True)
+        
+        console.print("[bold cyan]EnvHub uses your GitHub identity.[/bold cyan]")
+        console.print("Launching `gh auth login`...")
+        subprocess.run(["gh", "auth", "login"], check=True)
+        
+        console.print("[bold green]Auhtentication successful![/bold green]")
+        console.print("You can now use `envhub push` and `envhub pull`.")
+        
+    except FileNotFoundError:
+        console.print("[bold red]GitHub CLI (`gh`) not installed.[/bold red]")
+        console.print("Please install it: https://cli.github.com/")
+        raise typer.Exit(code=1)
+    except subprocess.CalledProcessError:
+        console.print("[bold red]Login failed.[/bold red]")
+        raise typer.Exit(code=1)
+
+@app.command()
 def init(
     api_url: str = typer.Option("http://localhost:3000/api", help="EnvHub API URL"),
 ):

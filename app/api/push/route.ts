@@ -25,6 +25,23 @@ export async function POST(req: Request) {
         }
 
         const manager = new BlobManager();
+
+        // --- OPTIMIZATION START: Check for Changes ---
+        try {
+            const currentBundle = await manager.getBundle(project, service, environment);
+            if (currentBundle && JSON.stringify(currentBundle.variables) === JSON.stringify(variables)) {
+                console.log(`[Push] No changes detected for ${project}/${service}/${environment}. Skipping save.`);
+                return NextResponse.json({
+                    status: 'success',
+                    version: currentBundle.version,
+                    message: 'No changes detected. Version not incremented.'
+                });
+            }
+        } catch (e) {
+            console.warn("Error checking current bundle, proceeding with push:", e);
+        }
+        // --- OPTIMIZATION END ---
+
         const version = await manager.pushBundle(
             project,
             service,

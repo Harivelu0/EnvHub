@@ -139,7 +139,7 @@ export default function Home() {
                 </div>
                 <div className="bg-black/50 rounded p-2 flex items-center justify-between group cursor-pointer hover:bg-black/70 transition-colors"
                   onClick={() => {
-                    const url = `${window.location.protocol}//${window.location.host}/cli/envhub_cli-2.0.2-py3-none-any.whl`;
+                    const url = `${window.location.protocol}//${window.location.host}/cli/envhub_cli-2.0.3-py3-none-any.whl`;
                     const cmd = `pip install ${url}`;
                     navigator.clipboard.writeText(cmd);
                     alert("Command copied to clipboard!");
