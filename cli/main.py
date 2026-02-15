@@ -156,7 +156,11 @@ def push(
         response = requests.post(f"{api_url}/push", json=payload, headers=headers)
         
         if response.status_code == 200:
-            console.print(f"[bold green]Success![/bold green] Version {response.json().get('version')} deployed.")
+            data = response.json()
+            if data.get("message"):
+                console.print(f"[bold yellow]{data['message']}[/bold yellow]")
+            else:
+                console.print(f"[bold green]Success![/bold green] Version {data.get('version')} deployed.")
         else:
             console.print(f"[bold red]Error {response.status_code}:[/bold red] {response.text}")
 
