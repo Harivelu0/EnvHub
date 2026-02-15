@@ -152,8 +152,8 @@ export default function Home() {
                       await navigator.clipboard.writeText(cmd);
                       alert(`Command copied! Installing version ${version}`);
                     } catch (e) {
-                      console.error(e);
-                      alert("Failed to get latest version. Please try again.");
+                      console.error("CLI Version Fetch Error:", e);
+                      alert("Failed to get latest version. Please try again or check the console.");
                     }
                   }}
                 >
