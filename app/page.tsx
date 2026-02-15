@@ -137,12 +137,24 @@ export default function Home() {
                   <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Install CLI</span>
                   <Terminal size={12} className="text-blue-400" />
                 </div>
-                <div className="bg-black/50 rounded p-2 flex items-center justify-between group cursor-pointer hover:bg-black/70 transition-colors"
-                  onClick={() => {
-                    const url = `${window.location.protocol}//${window.location.host}/cli/envhub_cli-latest-py3-none-any.whl`;
-                    const cmd = `pip install ${url}`;
-                    navigator.clipboard.writeText(cmd);
-                    alert("Command copied to clipboard!");
+                <div
+                  className="bg-black/50 rounded p-2 flex items-center justify-between group cursor-pointer hover:bg-black/70 transition-colors"
+                  onClick={async () => {
+                    try {
+                      // Fetch the latest version dynamically
+                      const response = await fetch('/cli/latest_version.txt');
+                      if (!response.ok) throw new Error('Failed to fetch version');
+                      const version = (await response.text()).trim();
+
+                      const url = `${window.location.protocol}//${window.location.host}/cli/envhub_cli-${version}-py3-none-any.whl`;
+                      const cmd = `pip install --force-reinstall ${url}`;
+
+                      await navigator.clipboard.writeText(cmd);
+                      alert(`Command copied! Installing version ${version}`);
+                    } catch (e) {
+                      console.error(e);
+                      alert("Failed to get latest version. Please try again.");
+                    }
                   }}
                 >
                   <code className="text-[10px] text-green-400 font-mono truncate mr-2">
@@ -244,6 +256,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-    </main>
+    </main >
   );
 }

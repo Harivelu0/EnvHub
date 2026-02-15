@@ -40,8 +40,8 @@ jobs:
           # Remove old wheels to keep it clean (optional, but good for clarity)
           rm -f public/cli/*.whl
           cp cli/dist/*.whl public/cli/
-          # Create a 'latest' copy for the download link
-          cp cli/dist/*.whl public/cli/envhub_cli-latest-py3-none-any.whl
+          # Save the version number to a file for the frontend to fetch
+          ls cli/dist/*.whl | head -n 1 | grep -oP 'envhub_cli-\K[0-9]+\.[0-9]+\.[0-9]+' > public/cli/latest_version.txt
 
       - name: Commit and Push if Changed
         run: |
