@@ -141,8 +141,8 @@ export default function Home() {
                   className="bg-black/50 rounded p-2 flex items-center justify-between group cursor-pointer hover:bg-black/70 transition-colors"
                   onClick={async () => {
                     try {
-                      // Fetch the latest version dynamically
-                      const response = await fetch('/cli/latest_version.txt');
+                      // Fetch the latest version dynamically with cache busting
+                      const response = await fetch(`/cli/latest_version.txt?t=${Date.now()}`);
                       if (!response.ok) throw new Error('Failed to fetch version');
                       const version = (await response.text()).trim();
 
