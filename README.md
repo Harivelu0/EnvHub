@@ -4,7 +4,8 @@
 
 EnvHub helps you manage secrets across projects, services, and environments with a Git-like workflow. It includes a beautiful web dashboard and a powerful CLI.
 
-![EnvHub Dashboard](/screenshot.png)
+
+<img width="2375" height="1416" alt="Screenshot 2026-02-15 200203" src="https://github.com/user-attachments/assets/92c83c54-f226-44b0-87c1-b2dbf2cd9a36" />
 
 ## Features
 
